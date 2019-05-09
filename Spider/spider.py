@@ -26,7 +26,10 @@ class Spider:
 
 def main():
     print('starting...')
-    url = 'http://www.baidu.com'
+    # url = 'http://www.baidu.com'
+    # url = 'https://job.bytedance.com/job/detail/35267'
+    url = 'https://job.alibaba.com/zhaopin/positionList.htm'
+
     spider = Spider(url)
     content = spider.get_page()
     print(content)
