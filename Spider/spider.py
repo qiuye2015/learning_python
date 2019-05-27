@@ -5,10 +5,26 @@ from requests.exceptions import ReadTimeout, HTTPError, RequestException
 import time
 import json
 from mysql import DB
+from sendEmail import EmailClient
 
-
-db = DB()
-    
+#db = DB()
+sender = '1119345739@qq.com'
+ecli = EmailClient(sender)
+content = """
+<!DOCTYPE html>
+<html>
+<head> 
+    <meta charset="utf-8"> 
+    <title>fjp</title> 
+</head>
+<body>
+    <table border="1" cellspacing="0">
+    <tr>
+        <td>ID</td>
+        <td>职位名称</td>
+        <td>岗位要求</td>
+    </tr>
+"""
 
 class Spider:
     def __init__(self, url):
@@ -56,6 +72,7 @@ def parse_page(response):
     totalPage = returnValue['totalPage']
     datas_list = returnValue['datas']
     now = time.time()
+    index = 0
     for data in datas_list:
         isOpen = data['isOpen']
         isNew = data['isNew']
@@ -70,6 +87,8 @@ def parse_page(response):
         recruitNumber = data['recruitNumber']
         description = data['description'].replace('<br/>','\n')
         workLocation = data['workLocation']
+        if 'shareLinkPcWechat' in data:
+            shareLinkPcWechat = data['shareLinkPcWechat']
         # (id, name, degree, workLocation, workExperience, 
         # departmentName,effectiveDate, uneffectualDate,requirement, description,recruitNumber)
         if (isOpen == 'Y') and (isNew == 'Y') and (uneffectualDate > now) and (degree != "博士"):
@@ -88,10 +107,21 @@ def parse_page(response):
             uneffectualDate = time.gmtime(uneffectualDate)
             params = [id,name,degree,workLocation,workExperience,departmentName,\
                       effectiveDate,uneffectualDate,requirement, description,recruitNumber\
-                     ]
+                    ]
+            index +=1
+            name_url = "<a href={}>{}</a>".format(shareLinkPcWechat,name)
             print("add id %s" % id)
+            content +="
+            <tr>
+                <td>{}</td>
+                <td>{}</td>
+                <td>{}</td>
+            </tr>
+            ".format(index,name_url,requirement)
 
-            db.add_item(params)
+            
+            #db.add_item(params)
+
 
 def doRequestAndParseData(spider,index=1):
     #while True:
@@ -116,6 +146,12 @@ def main():
     #doRequestAndParseData(spider,1)
 
  #   db.show_items()
+    content +="""
+          </table>
+          </body>
+          </html>
+          """
+    ecli.send(content, 'html')
 
 if __name__ == "__main__":
     main()
