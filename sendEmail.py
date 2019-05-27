@@ -4,32 +4,61 @@
 import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
+from email.utils import parseaddr, formataddr
 
-sender = 'qiuye_tju@163.com'
-#receivers = '1119345739@qq.com'
-receivers = ['1119345739@qq.com']
-subject = 'Job'
-content = "gogogogo"
 
-message = MIMEText(content, 'plain', 'utf-8')
-message['From'] = Header('qiuye_tju@163.com', 'utf-8')
-message['To'] = Header('1119345739@qq.com', 'utf-8')
-message['Subject'] = Header(subject, 'utf-8')
-# 第三方 SMTP 服务
-#mail_host = 'smtp.163.com'
-mail_user = 'qiuye_tju@163.com'
-mail_pass = 'yes7585151' #授权码
+# 只可以给一个人发送邮件
+class EmailClient():
+    def __init__(self, receivers):
+        self.receivers = receivers
+        self.sender = 'qiuye_tju@163.com'
+        self.subject = "Come On Boy"
 
-try:
-    smtpObj = smtplib.SMTP(host='smtp.163.com',port=25)
-    #smtpObj.set_debuglevel(1)
-    #smtpObj.connect(mail_host,25) # host,port
-    print('connect...')
-    smtpObj.login(mail_user,mail_pass)
-    print('login...')
-    smtpObj.sendmail(sender, receivers, message.as_string())
-    print('SUCCESS...')
-    smtpObj.quit()
-except smtplib.SMTPException as e:
-    print('Error:'+format(e))
+        # 第三方 SMTP 服务
+        self.mail_user = 'qiuye_tju@163.com'
+        self.mail_pass = 'yes7585151'  # 授权码
+
+    def format_addr(self, s):
+        name, addr = parseaddr(s)
+        return formataddr((Header(name, 'utf-8').encode(), addr))
+
+    def send(self, content, subtype='plain'):
+        message = MIMEText(content, subtype, 'utf-8')
+
+        message['From'] = self.format_addr('匿名<%s>' % self.sender)
+        message['To'] = self.format_addr(self.receivers)
+        message['Subject'] = Header(self.subject, 'utf-8').encode()
+
+        try:
+            smtp = smtplib.SMTP(host='smtp.163.com', port=25)
+            print('connect...')
+            smtp.login(self.mail_user, self.mail_pass)
+            print('login...')
+            smtp.sendmail(self.sender, [self.receivers], message.as_string())
+            print('SUCCESS...')
+            smtp.quit()
+        except smtplib.SMTPException as e:
+            print('Error:' + format(e))
+
+
+def main():
+    sender = '1119345739@qq.com'
+    emailclient = EmailClient(sender)
+    content = """
+    <html>
+        <body>
+            <h1>Hello</h1>
+            <p>send by <a href="http://www.python.org">Python</a>...</p>
+        </body>
+    </html>
+    """
+    # content = "学习党的十八大精神"
+    emailclient.send(content, 'html')
+
+
+if __name__ == '__main__':
+    main()
+
+
+
 
