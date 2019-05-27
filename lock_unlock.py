@@ -15,13 +15,13 @@ class MyThread1(threading.Thread):
         print(self.name+'A lock')
 
         mutexB.acquire()
+        print(self.name+'A unlock')
+
         print(self.name+'B lock')
         mutexB.release()
         print(self.name+'B unlock')
 
         mutexA.release()
-        print(self.name+'A unlock')
-
 
 class MyThread2(threading.Thread):
     def run(self):
