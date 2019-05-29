@@ -12,7 +12,7 @@ class EmailClient():
     def __init__(self, receivers):
         self.receivers = receivers
         self.sender = 'qiuye_tju@163.com'
-        self.subject = "Come On Boy"
+        self.subject = "Come On CHina"
 
         # 第三方 SMTP 服务
         self.mail_user = 'qiuye_tju@163.com'
@@ -25,8 +25,8 @@ class EmailClient():
     def send(self, content, subtype='plain'):
         message = MIMEText(content, subtype, 'utf-8')
 
-        message['From'] = self.format_addr('匿名<%s>' % self.sender)
-        message['To'] = self.format_addr(self.receivers)
+        message['From'] = self.format_addr('qiuye_tju<%s>' % self.sender)
+        message['To'] = self.format_addr('Me<%s>' % self.receivers)
         message['Subject'] = Header(self.subject, 'utf-8').encode()
 
         try:
@@ -42,18 +42,19 @@ class EmailClient():
 
 
 def main():
-    sender = '1119345739@qq.com'
+    #sender = 'f1119345739@163.com'
     emailclient = EmailClient(sender)
-    content = """
-    <html>
-        <body>
-            <h1>Hello</h1>
-            <p>send by <a href="http://www.python.org">Python</a>...</p>
-        </body>
-    </html>
-    """
-    # content = "学习党的十八大精神"
-    emailclient.send(content, 'html')
+   # content = """
+   # <html>
+    #    <body>
+     #       <h1>Hello</h1>
+      #      <p>send by <a href="http://www.python.org">Python</a>...</p>
+      #  </body>
+    #</html>
+    #"""
+    content = "明天不上班"
+    emailclient.send(content)
+    #emailclient.send(content, 'html')
 
 
 if __name__ == '__main__':

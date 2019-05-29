@@ -8,7 +8,8 @@ from mysql import DB
 from sendEmail import EmailClient
 
 #db = DB()
-sender = '1119345739@qq.com'
+#sender = 'f1119345739@163.com'
+sender = 'qiuye_tju@163.com'
 ecli = EmailClient(sender)
 content = """
 <!DOCTYPE html>
@@ -20,7 +21,6 @@ content = """
 <body>
     <table border="1" cellspacing="0">
     <tr>
-        <td>ID</td>
         <td>职位名称</td>
         <td>岗位要求</td>
     </tr>
@@ -68,11 +68,11 @@ class Spider:
 
 
 def parse_page(response):
+    global content
     returnValue = response['returnValue']
     totalPage = returnValue['totalPage']
     datas_list = returnValue['datas']
     now = time.time()
-    index = 0
     for data in datas_list:
         isOpen = data['isOpen']
         isNew = data['isNew']
@@ -108,16 +108,14 @@ def parse_page(response):
             params = [id,name,degree,workLocation,workExperience,departmentName,\
                       effectiveDate,uneffectualDate,requirement, description,recruitNumber\
                     ]
-            index +=1
             name_url = "<a href={}>{}</a>".format(shareLinkPcWechat,name)
             print("add id %s" % id)
-            content +="
+            content +="""
             <tr>
                 <td>{}</td>
                 <td>{}</td>
-                <td>{}</td>
             </tr>
-            ".format(index,name_url,requirement)
+            """.format(name_url,requirement)
 
             
             #db.add_item(params)
@@ -144,14 +142,18 @@ def main():
     for i in range(6):
         doRequestAndParseData(spider,i+1)
     #doRequestAndParseData(spider,1)
-
+    global content
  #   db.show_items()
     content +="""
           </table>
           </body>
           </html>
           """
+
     ecli.send(content, 'html')
+    #with open('job.html','w') as f:
+    #    f.write(content)
+
 
 if __name__ == "__main__":
     main()
