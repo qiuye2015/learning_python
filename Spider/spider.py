@@ -87,6 +87,7 @@ def parse_page(response):
         recruitNumber = data['recruitNumber']
         description = data['description'].replace('<br/>','\n')
         workLocation = data['workLocation']
+        shareLinkPcWechat=""
         if 'shareLinkPcWechat' in data:
             shareLinkPcWechat = data['shareLinkPcWechat']
         # (id, name, degree, workLocation, workExperience, 
